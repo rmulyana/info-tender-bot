@@ -1,0 +1,86 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+pythonenv*
+
+# Virtual Environment
+venv/
+env/
+virtualenv/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Project specific
+debug_*.html
+*.log
+*.pot
+*.pyc
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Telegram Bot specific
+*.session
+*.session-journal
+
+# Tesseract temporary files
+/tmp/tess_*
+
+# Downloads
+downloads/
+temp/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.bak
+
+# Test files
+test_*.py
+testing/
+tests/_results/
+
+# Docker (if used)
+docker-compose.override.yml
+Dockerfile.dev
+
+# Backup files
+*.backup
+*.bak
+backups/
+
+# Credentials
+credentials.json
+*.pem
+*.key
+*.crt
