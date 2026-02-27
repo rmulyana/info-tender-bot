@@ -174,9 +174,9 @@ async def cari(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not query:
         await update.message.reply_text(
             "💡 *Cara Penggunaan:*\n"
-            "• `/cari procurement` - cari kata 'procurement' di hari ini\n"
-            "• `/cari engineering procurement` - cari semua kata (AND)\n"
-            "• `/cari 2026-02-24 procurement` - cari di tanggal tertentu\n",
+            "• `/cari electrical` - cari kata 'electrical' di hari ini\n"
+            "• `/cari mechanical electrical` - cari semua kata (AND)\n"
+            "• `/cari 2026-02-24 electrical` - cari di tanggal tertentu\n",
             parse_mode='Markdown'
         )
         return
@@ -186,10 +186,12 @@ async def cari(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tanggal_match = re.match(tanggal_pattern, query)
     
     if tanggal_match:
+        # Format: /cari 2026-02-24 electrical
         tanggal_str = tanggal_match.group(1)
         query = tanggal_match.group(2)
         custom_date = True
     else:
+        # Format: /cari electrical (pakai tanggal hari ini)
         tanggal_str = datetime.now().strftime("%Y-%m-%d")
         custom_date = False
 
@@ -409,7 +411,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text(
             "📅 *Format Input Tanggal*\n\n"
             "Ketik: `/cari YYYY-MM-DD keyword`\n"
-            "Contoh: `/cari 2026-02-24 procurement`\n\n"
+            "Contoh: `/cari 2026-02-24 electrical`\n\n"
             "Atau gunakan tombol di atas untuk navigasi.",
             parse_mode='Markdown'
         )
@@ -437,6 +439,56 @@ async def login_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("❌ Login gagal!")
 
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Menampilkan panduan penggunaan bot"""
+    help_text = (
+        "🤖 *BOT TENDER INDONESIA* 🤖\n\n"
+        "*CARA PENGGUNAAN:*\n\n"
+        "🔍 *Mencari Tender*\n"
+        "• `/cari [kata kunci]`\n"
+        "  Cari tender hari ini\n"
+        "  Contoh: `/cari konstruksi`\n\n"
+        "• `/cari YYYY-MM-DD [kata kunci]`\n"
+        "  Cari tender di tanggal tertentu\n"
+        "  Contoh: `/cari 2026-02-24 detail engineering`\n\n"
+        "• `/cari \"frasa persis\"`\n"
+        "  Cari frasa persis (pakai tanda kutip)\n"
+        "  Contoh: `/cari \"mechanical electrical\"`\n\n"
+        "🧠 *Tips Pencarian*\n"
+        "• Bisa pakai multiple kata: `/cari mechanical electrical`\n"
+        "• Semua kata harus ada di judul tender\n"
+        "• Gunakan kata kunci yang spesifik\n\n"
+        "📅 *Navigasi Tanggal*\n"
+        "• Jika tidak ditemukan, akan muncul tombol:\n"
+        "  ⬅️ Kemarin | ➡️ Besok | 📅 Pilih tanggal\n\n"
+        "🔗 *Hasil Pencarian*\n"
+        "• Setiap judul tender bisa diklik\n"
+        "• Link langsung ke halaman detail\n"
+        "• Ada link ke halaman pencarian website\n\n"
+        "⚙️ *Perintah Lain*\n"
+        "• `/status` - Cek status login\n"
+        "• `/login` - Force login ulang\n"
+        "• `/help` - Tampilkan panduan ini\n\n"
+        "⚠️ *Catatan*\n"
+        "• Bot perlu login dengan akun Tender Indonesia\n"
+        "• Session login bertahan ~30 menit\n"
+        "• File `.env` berisi credentials (jangan dishare!)\n\n"
+        "---\n"
+        "Dibuat dengan ❤️ untuk memudahkan pencarian tender"
+    )
+    
+    await update.message.reply_text(help_text, parse_mode='Markdown')
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Sambutan ketika user pertama kali mulai bot"""
+    welcome_text = (
+        "👋 *Selamat datang di Bot Tender Indonesia!*\n\n"
+        "Saya akan membantu Anda mencari tender di "
+        "[tender-indonesia.com](https://tender-indonesia.com)\n\n"
+        "Ketik `/help` untuk melihat panduan penggunaan."
+    )
+    await update.message.reply_text(welcome_text, parse_mode='Markdown')
+
 if __name__ == '__main__':
     token = os.getenv("TELEGRAM_TOKEN")
     if not token:
@@ -446,9 +498,11 @@ if __name__ == '__main__':
     app = ApplicationBuilder().token(token).build()
     
     # Tambahkan handler
+    app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("cari", cari))
     app.add_handler(CommandHandler("status", status))
     app.add_handler(CommandHandler("login", login_command))
+    app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CallbackQueryHandler(button_callback))
     
     # Login awal
@@ -459,8 +513,10 @@ if __name__ == '__main__':
     
     print("🤖 Bot Tender siap digunakan!")
     print("📌 Commands:")
+    print("   /start - Mulai bot")
     print("   /cari [keyword] - Cari di hari ini")
     print("   /cari YYYY-MM-DD [keyword] - Cari di tanggal tertentu")
     print("   /status - Cek status login")
     print("   /login - Force login ulang")
+    print("   /help - Tampilkan panduan penggunaan")
     app.run_polling()
